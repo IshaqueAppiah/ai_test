@@ -8,6 +8,7 @@ This is an upskilling track at AmaliTech with weekly sessions and hands-on labs 
 Successful completion will equip learners with foundational skills as **AI Engineers**.
 ## Resources
 - Registration: [Signup link](https://forms.office.com/e/kHpdHcQJev)
+- Lab repository: [GitHub link](https://github.com/Amali-Tech/ai-application-developer-labs)
 - Primary learning resource: [OpenAI Platform Docs - Overview](https://platform.openai.com/docs/overview)
 - *Optional* resources, especially for those with knowledge in other fields:
 	- Data science: [HuggingFace LLM Course](https://huggingface.co/learn/llm-course/chapter1/1)
@@ -21,7 +22,7 @@ Successful completion will equip learners with foundational skills as **AI Engin
 - **Cadence**: Weekly 2h live session plus minimum 6h self study
 - **Session flow**: instructor walkthrough, rotating learner demos, open discussion
 - **Coordination**: Slack channel, all online sessions recorded
-- **Assessment criteria:
+- **Assessment criteria**:
 	- **Lab Completion (60%)**: Working code meeting weekly specifications
 	- **Dodokpo Assessment (20%)**: Online test covering core concepts
 	- **Participation (20%)**: weekly session participation and slack engagement
@@ -35,8 +36,8 @@ Successful completion will equip learners with foundational skills as **AI Engin
 ## Expectations
 - Study all weekly docs and pre-reads for the next session
 - Attend and participate in all live sessions
-- Commit frequently to git and prepare to demo all weekly labs
-- Share knowledge in Slack
+- Commit frequently to git, demo weekly labs
+- Share knowledge in Slack (*#ai-application-development*)
 	- One helpful post per week that includes a code snippet or a reading summary
 	- Comments on posts that provides additional feedback or reflection
 - Participate and contribute with integrity
@@ -66,3 +67,8 @@ The following cross-functional topics will be integrated throughout the course:
 - **Deployment**: Environment configuration, API design patterns, containerisation
 
 ---
+## Onboarding instructions (for instructors)
+1. Ensure learner is [signed up]([Signup link](https://forms.office.com/e/kHpdHcQJev))
+2. Add learner to [Slack channel](https://amalitech-workspace.slack.com/archives/C09BHH7FQ48)
+3. 2. Add learner to [GitHub team](https://github.com/orgs/Amali-Tech/teams/ai-application-developer-labs)
+4. Invite learner to weekly meeting in Outlook.
