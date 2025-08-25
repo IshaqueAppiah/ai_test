@@ -68,7 +68,7 @@ The following cross-functional topics will be integrated throughout the course:
 
 ---
 ## Onboarding instructions (for instructors)
-1. Ensure learner is [signed up]([Signup link](https://forms.office.com/e/kHpdHcQJev))
+1. Ensure learner is [signed up](https://forms.office.com/e/kHpdHcQJev)
 2. Add learner to [Slack channel](https://amalitech-workspace.slack.com/archives/C09BHH7FQ48)
-3. 2. Add learner to [GitHub team](https://github.com/orgs/Amali-Tech/teams/ai-application-developer-labs)
+3. Add learner to [GitHub team](https://github.com/orgs/Amali-Tech/teams/ai-application-developer-labs)
 4. Invite learner to weekly meeting in Outlook.
