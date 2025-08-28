@@ -72,3 +72,4 @@ The following cross-functional topics will be integrated throughout the course:
 2. Add learner to [Slack channel](https://amalitech-workspace.slack.com/archives/C09BHH7FQ48)
 3. Add learner to [GitHub team](https://github.com/orgs/Amali-Tech/teams/ai-application-developer-labs)
 4. Invite learner to weekly meeting in Outlook.
+5. Issue an [OpenAI API key](https://platform.openai.com/settings/proj_qDHGPSZUpKpdbTRuW8QbFXv4/api-keys).
