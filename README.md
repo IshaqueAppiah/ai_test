@@ -32,16 +32,39 @@ docker-compose down
 ### Project Structure
 ```
 ├── backend/
-│   ├── app.py              # FastAPI server with chat endpoint
-│   └── requirements.txt    # Python dependencies
+│   ├── app.py              # Backend: FastAPI server with chat endpoint
+│   ├── pyproject.toml      # Backend: Python dependencies and config
+│   └── tests/              # Backend: Test suite
+│       └── ...
 ├── frontend/
-│   └── index.html         # Chat interface
-├── Dockerfile.backend     # Backend container
-├── Dockerfile.frontend    # Frontend container
-├── docker-compose.yml     # Container orchestration
-└── CURRICULUM.md          # Course details
+│   └── index.html         # Frontend: Chat interface
+├── Dockerfile.backend     # Ops: Backend container
+├── Dockerfile.frontend    # Ops: Frontend container
+├── docker-compose.yml     # Ops: Container orchestration
+└── CURRICULUM.md          # Docs: Course details
 ```
 
-Students progressively enhance the single `/chat` endpoint each week, adding capabilities like streaming, memory, RAG, function calling, and production features.
+### Backend Development
+
+**Prerequisites:** 
+- [uv](https://docs.astral.sh/uv/) installed for Python development
+
+**Development Workflow:**
+```bash
+# Install dependencies
+cd backend && uv sync
+
+# Run server locally for development
+cd backend && uv run uvicorn app:app --reload
+
+# Run tests
+cd backend && uv run pytest tests/ -v
+
+# Run specific week tests
+cd backend && uv run pytest tests/test_week_01.py -v
+
+# Run only unit tests (skip external / metered API calls)
+cd backend && uv run pytest tests/ -v -m "not integration"
+```
 
 **📋 [View complete curriculum →](CURRICULUM.md)**
