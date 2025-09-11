@@ -8,6 +8,7 @@ This is an upskilling track at AmaliTech with weekly sessions and hands-on labs 
 Successful completion will equip learners with foundational skills as **AI Engineers**.
 ## Resources
 - Registration: [Signup link](https://forms.office.com/e/kHpdHcQJev)
+- Feedback (after each session): [Survey link](https://forms.office.com/e/kYuGZHBdh5)
 - Lab repository: [GitHub link](https://github.com/Amali-Tech/ai-application-developer-labs)
 - Primary learning resource: [OpenAI Platform Docs - Overview](https://platform.openai.com/docs/overview)
 - *Optional* resources, especially for those with knowledge in other fields:
@@ -48,7 +49,7 @@ Successful completion will equip learners with foundational skills as **AI Engin
 
 | Week | Name | Areas of focus | Pre-read | Lab (minimum) |
 |------|------|----------------|----------|---------------|
-| Week 1 | Foundations with Completions + Responses API | - [How LLMs work](https://platform.openai.com/docs/concepts)<br>- [OpenAI quick-start](https://platform.openai.com/docs/quickstart) | [Karpathy: 1 hr intro to LLMs](https://www.youtube.com/watch?v=zjkBMFhNj_g) | Build a basic Q&A app that answers questions |
+| [Week 1](https://amalitech-my.sharepoint.com/:v:/p/nachiket_apte/EWlzSIp3OxZKt-cLraZ62JoBDZ4bswgSxkGeKv6-3CyuOQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=54lua1) | Foundations with Completions + Responses API | - [How LLMs work](https://platform.openai.com/docs/concepts)<br>- [OpenAI quick-start](https://platform.openai.com/docs/quickstart) | [Karpathy: 1 hr intro to LLMs](https://www.youtube.com/watch?v=zjkBMFhNj_g) | Build a basic Q&A app that answers questions |
 | Week 2 | Streaming response and conversations | - [Streaming API](https://platform.openai.com/docs/guides/streaming-responses)<br>- [Managing state and conversations](https://platform.openai.com/docs/guides/conversation-state)<br>- [Background mode](https://platform.openai.com/docs/guides/background) | - | Add conversation memory and streaming so users can ask follow-up questions naturally |
 | Week 3 | Prompting and reasoning | - [Prompt engineering](https://platform.openai.com/docs/guides/prompt-engineering)<br>- [Reasoning best practices](https://platform.openai.com/docs/guides/reasoning-best-practices) | [Anthropic AI Fluency: Framework & Foundations](https://anthropic.skilljar.com/ai-fluency-framework-foundations) | Create a prompt template system for different query types, add reasoning controls |
 | Week 4 | Function calling and structured outputs | - [Web search tool](https://platform.openai.com/docs/guides/tools-web-search)<br>- [Structured outputs](https://platform.openai.com/docs/guides/structured-outputs) | - | Extend the app to call a tool (ex: web search) when needed and return validated JSON that matches a schema |
