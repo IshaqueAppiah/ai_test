@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from models.chat_models import ChatMessage, ChatResponse
 from services.open_ai_service import basic_chat_open_ai

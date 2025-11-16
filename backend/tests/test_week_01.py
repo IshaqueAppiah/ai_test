@@ -7,7 +7,8 @@ from app import app
 class TestWeek01:
     
     def test_env_file_exists(self):
-        env_file = Path(__file__).parent.parent / ".env"
+        # Check for .env in the project root (parent of backend)
+        env_file = Path(__file__).parent.parent.parent / ".env"
         assert env_file.exists()
     
     @pytest.mark.integration # Integration tests typically cost money for external API calls
