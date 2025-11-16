@@ -19,7 +19,7 @@ async def stream_chat(chat_message:ChatMessage):
     async def event_generator():
      for event in stream_response:
         if isinstance(event, dict) and 'type' in event and event['type']=='response.output_text.delta':
-            delta = event.get('delta') 
+            delta = event.get('delta')  # type: ignore
             if delta:
                     yield f"data: {delta}\n\n" 
            
