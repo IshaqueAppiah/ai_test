@@ -1,230 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Application Developer Labs</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
 
-        .chat-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-        }
+      .chat-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-        .header {
-            background: #2563eb;
-            color: white;
-            padding: 16px 20px;
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .header {
+        background: #2563eb;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .header h1 {
-            font-size: 18px;
-            font-weight: 600;
-        }
+      .header h1 {
+        font-size: 18px;
+        font-weight: 600;
+      }
 
-        .clear-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+      .clear-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
 
-        .clear-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
+      .clear-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
 
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #fafafa;
-        }
+      .messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #fafafa;
+      }
 
-        .message {
-            margin: 12px 0;
-            padding: 12px 16px;
-            border-radius: 8px;
-            max-width: 80%;
-            line-height: 1.4;
-        }
+      .message {
+        margin: 12px 0;
+        padding: 12px 16px;
+        border-radius: 8px;
+        max-width: 80%;
+        line-height: 1.4;
+      }
 
-        .user-message {
-            background: #2563eb;
-            color: white;
-            margin-left: auto;
-        }
+      .user-message {
+        background: #2563eb;
+        color: white;
+        margin-left: auto;
+      }
 
-        .bot-message {
-            background: white;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
+      .bot-message {
+        background: white;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
 
-        .input-area {
-            padding: 16px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            gap: 8px;
-        }
+      .input-area {
+        padding: 16px;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 8px;
+      }
 
-        .input-area input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            outline: none;
-            font-size: 14px;
-        }
+      .input-area input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        outline: none;
+        font-size: 14px;
+      }
 
-        .input-area input:focus {
-            border-color: #2563eb;
-        }
+      .input-area input:focus {
+        border-color: #2563eb;
+      }
 
-        .input-area button {
-            padding: 12px 20px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+      .input-area button {
+        padding: 12px 20px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
 
-        .input-area button:hover:not(:disabled) {
-            background: #1d4ed8;
-        }
+      .input-area button:hover:not(:disabled) {
+        background: #1d4ed8;
+      }
 
-        .input-area button:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
+      .input-area button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="chat-container">
-        <div class="header">
-            <h1>AI Chat Application</h1>
-            <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
-        </div>
-        
-        <div class="messages" id="messages">
-            <div class="message bot-message">
-                Chat application ready.
-            </div>
-        </div>
-        
-        <div class="input-area">
-            <input 
-                type="text" 
-                id="messageInput" 
-                placeholder="Type your message..."
-                onkeypress="handleKeyPress(event)"
-            >
-            <button onclick="sendMessage()" id="sendButton">Send</button>
-        </div>
+      <div class="header">
+        <h1>AI Chat Application</h1>
+        <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="message bot-message">Chat application ready.</div>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type your message..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendMessage()" id="sendButton">Send</button>
+      </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000';
-        
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendButton');
-            
-            const message = input.value.trim();
-            if (!message) return;
-            
-            addMessage(message, 'user');
-            input.value = '';
-            sendButton.disabled = true;
-            sendButton.textContent = 'Sending...';
-            
-            try {
-                const response = await fetch(`${API_BASE}/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                addMessage(data.response, 'bot');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('Connection error.', 'bot');
-            }
-            
-            sendButton.disabled = false;
-            sendButton.textContent = 'Send';
+      const API_BASE = "http://localhost:8000";
+
+      async function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, "user");
+        input.value = "";
+        sendButton.disabled = true;
+        sendButton.textContent = "Sending...";
+
+        await streamedOpenAiResponse(message);
+
+        sendButton.disabled = false;
+        sendButton.textContent = "Send";
+      }
+
+      async function open_ai_chat(message) {
+        try {
+          const response = await fetch(`${API_BASE}/chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          addMessage(data.response, "bot");
+        } catch (error) {
+          console.error("Error:", error);
+          addMessage("Connection error.", "bot");
         }
-        
-        function addMessage(text, sender) {
-            const messagesContainer = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            messageDiv.textContent = text;
-            
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      async function streamedOpenAiResponse(message) {
+        try {
+          const response = await fetch(`${API_BASE}/chat`, {
+            method: "POST",
+            body: JSON.stringify({
+              message: message,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+           const messagesContainer = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        let buffer = '';
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            const storedValue = chunk.split(":")[1];
+            buffer += storedValue;
+            await typeText(messageDiv, buffer);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          addMessage("Connection error.", "bot");
         }
-        
-        function clearChat() {
-            const messagesContainer = document.getElementById('messages');
-            messagesContainer.innerHTML = '<div class="message bot-message">Chat cleared.</div>';
+      }
+      function addMessage(text, sender) {
+        const messagesContainer = document.getElementById("messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = text;
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      function clearChat() {
+        const messagesContainer = document.getElementById("messages");
+        messagesContainer.innerHTML =
+          '<div class="message bot-message">Chat cleared.</div>';
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
         }
-        
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+      }
+
+      async function checkBackendHealth() {
+        try {
+          const response = await fetch(`${API_BASE}/health`);
+          if (response.ok) {
+            console.log("Backend is healthy");
+          }
+        } catch (error) {
+          console.warn("Backend health check failed:", error);
+          addMessage("Backend offline.", "bot");
         }
-        
-        async function checkBackendHealth() {
-            try {
-                const response = await fetch(`${API_BASE}/health`);
-                if (response.ok) {
-                    console.log('Backend is healthy');
-                }
-            } catch (error) {
-                console.warn('Backend health check failed:', error);
-                addMessage('Backend offline.', 'bot');
-            }
+      }
+      async function typeText(element, text) {
+        const current = element.textContent;
+        if (text.length > current.length) {
+          for (let i = current.length; i < text.length; i++) {
+            element.textContent += text[i];
+            element.parentElement.scrollTop =
+              element.parentElement.scrollHeight;
+            await new Promise((res) => setTimeout(res, 20)); // Typing speed (ms)
+          }
         }
-        
-        checkBackendHealth();
+      }
+      checkBackendHealth();
     </script>
-</body>
+  </body>
 </html>

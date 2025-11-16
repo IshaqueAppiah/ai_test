@@ -10,7 +10,7 @@ async def chat(chat_message: ChatMessage) -> ChatResponse:
     
     response = basic_chat_open_ai(message)
     
-    return ChatResponse(response=response)
+    return ChatResponse(response=response) 
 
 @router.post("/chat/stream")
 async def stream_chat(chat_message:ChatMessage):
