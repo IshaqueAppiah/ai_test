@@ -20,3 +20,15 @@ def streamed_chat(chat:str):
     stream=True
 )
     return stream
+
+
+def resonining_from_openai(chat:str):
+    stream = client.responses.create( 
+    model="gpt-5",
+    reasoning={"effort": "medium",  "summary": "auto" },
+    input=[{"role": "user", "content": chat}],
+    conversation=conversation.id,
+    stream= True,
+    max_output_tokens=300,
+)
+    return stream
