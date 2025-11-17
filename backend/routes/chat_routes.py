@@ -41,13 +41,11 @@ async def reasoning_chat(chat_message: ChatMessage):
         for event in stream_response:
             if hasattr(event, "type"):
 
-            # reasoning tokens
                 if event.type == "response.reasoning_summary_text.delta":
                     delta = getattr(event, "delta", None)
                     if delta:
                         yield f"event: reasoning\ndata: {delta}\n\n"
 
-            # output tokens
                 if event.type == "response.output_text.delta":
                     delta = getattr(event, "delta", None)
                     if delta:
