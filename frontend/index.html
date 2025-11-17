@@ -162,7 +162,7 @@
         sendButton.disabled = true;
         sendButton.textContent = "Sending...";
 
-        await streamedOpenAiResponse(message);
+        await streamedOpenAiResponseWithReasoning(message);
 
         sendButton.disabled = false;
         sendButton.textContent = "Send";
@@ -192,9 +192,70 @@
         }
       }
 
+  async function streamedOpenAiResponseWithReasoning(message) {
+  try {
+    const response = await fetch(`${API_BASE}/chat/reasoning`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    const messagesContainer = document.getElementById("messages");
+    // Reasoning div (shown first if present)
+    let reasoningDiv = null;
+    // Output div (main chat output)
+    const outputDiv = document.createElement("div");
+    outputDiv.className = "message bot-message";
+    messagesContainer.appendChild(outputDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    let outputBuffer = "";
+    let reasoningBuffer = "";
+    let reasoningShown = false;
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+
+      // Expecting backend to send: "type:reasoning\ndata:...text...\n\n" or "type:output\ndata:...text...\n\n"
+     const lines = chunk.split("\n");
+let type = null, data = "";
+for (const line of lines) {
+  if (line.startsWith("event:")) {
+    type = line.replace("event:", "").trim();
+  } else if (line.startsWith("data:")) {
+    data = line.replace("data:", "");
+  }
+}
+      if (type === "reasoning") {
+        reasoningBuffer += data;
+        if (!reasoningDiv) {
+          reasoningDiv = document.createElement("div");
+          reasoningDiv.className = "message bot-message";
+          reasoningDiv.style.fontStyle = "italic";
+          reasoningDiv.style.background = "#f0f4ff";
+          reasoningDiv.textContent = "Reasoning: ";
+          messagesContainer.insertBefore(reasoningDiv, outputDiv);
+        }
+        await typeText(reasoningDiv, "Reasoning: " + reasoningBuffer);
+        reasoningShown = true;
+      } else if (type === "output") {
+        outputBuffer += data;
+        await typeText(outputDiv, outputBuffer);
+      }
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    addMessage("Connection error.", "bot");
+  }
+}
+
       async function streamedOpenAiResponse(message) {
         try {
-          const response = await fetch(`${API_BASE}/chat`, {
+          const response = await fetch(`${API_BASE}/chat/stream`, {
             method: "POST",
             body: JSON.stringify({
               message: message,
@@ -204,13 +265,13 @@
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
 
-           const messagesContainer = document.getElementById('messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message bot-message';
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          const messagesContainer = document.getElementById("messages");
+          const messageDiv = document.createElement("div");
+          messageDiv.className = "message bot-message";
+          messagesContainer.appendChild(messageDiv);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-        let buffer = '';
+          let buffer = "";
 
           while (true) {
             const { value, done } = await reader.read();

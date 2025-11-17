@@ -16,11 +16,15 @@ async def chat(chat_message: ChatMessage) -> ChatResponse:
 async def stream_chat(chat_message:ChatMessage):
     message = chat_message.message
     stream_response =streamed_chat(message)
+   
     async def event_generator():
      for event in stream_response:
-        if isinstance(event, dict) and 'type' in event and event['type']=='response.output_text.delta':
-            delta = event.get('delta')  # type: ignore
-            if delta:
+       
+       if hasattr(event, "type"):
+           if event.type == "response.output_text.delta":
+                delta = getattr(event, "delta", None) # type: ignore
+                print(delta) # type: ignore
+                if delta:
                     yield f"data: {delta}\n\n" 
            
         
@@ -28,29 +32,30 @@ async def stream_chat(chat_message:ChatMessage):
 
 
            
-
 @router.post("/chat/reasoning")
 async def reasoning_chat(chat_message: ChatMessage):
     message = chat_message.message
-    reasoning_response = resonining_from_openai(message)
+    stream_response = resonining_from_openai(message)
 
     async def event_generator():
-        summary_sent = False
-        for event in reasoning_response: # type: ignore
-            if (
-                isinstance(event, dict)
-                and "type" in event
-            ):
-                if event["type"] == "response.reasoning_summary_text.delta" and not summary_sent:
-                    delta = event.get("delta") # type: ignore
-                    if delta:
-                        yield f"data: {delta}\n\n"
-                        summary_sent = True
-                elif event["type"] == "response.output_text.delta":
-                    delta = event.get("delta") # type: ignore
-                    if delta:
-                        yield f"data: {delta}\n\n"
+        for event in stream_response:
+            if hasattr(event, "type"):
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+            # reasoning tokens
+                if event.type == "response.reasoning_summary_text.delta":
+                    delta = getattr(event, "delta", None)
+                    if delta:
+                        yield f"event: reasoning\ndata: {delta}\n\n"
 
-    
+            # output tokens
+                if event.type == "response.output_text.delta":
+                    delta = getattr(event, "delta", None)
+                    if delta:
+                        yield f"event: output\ndata: {delta}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"},
+    )
+
