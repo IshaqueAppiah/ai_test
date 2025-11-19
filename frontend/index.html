@@ -213,7 +213,7 @@
 
     let outputBuffer = "";
     let reasoningBuffer = "";
-    let reasoningShown = false;
+   
 
     while (true) {
       const { value, done } = await reader.read();
@@ -238,10 +238,10 @@ for (const line of lines) {
           reasoningDiv.style.fontStyle = "italic";
           reasoningDiv.style.background = "#f0f4ff";
           reasoningDiv.textContent = "Reasoning: ";
-          messagesContainer.insertBefore(reasoningDiv, outputDiv);
+          outputDiv.before(reasoningDiv);
         }
         await typeText(reasoningDiv, "Reasoning: " + reasoningBuffer);
-        reasoningShown = true;
+       
       } else if (type === "output") {
         outputBuffer += data;
         await typeText(outputDiv, outputBuffer);

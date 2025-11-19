@@ -14,8 +14,7 @@ def basic_chat_open_ai(chat: str):
         model="gpt-5-nano",
         input=[{"role": "user", "content": chat}],
         tools=[
-            {"type": "web_search"},
-            {"type": "code_interpreter", "container": {"type": "auto"}},
+           
         ],
         conversation=conversation.id,
         instructions=instructions,
