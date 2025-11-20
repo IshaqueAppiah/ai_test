@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Application Developer Labs Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        body { background: #f5f6fa; }
+        .section { margin-top: 2rem; }
+        .box { margin-bottom: 2rem; }
+        .results-table { width: 100%; }
+        .results-table th, .results-table td { text-align: center; }
+        .is-scrollable { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">AI Application Developer Labs Dashboard</h1>
+        <div class="columns is-multiline mb-4">
+            <div class="column is-one-quarter">
+                <div class="box has-text-centered" onclick="selectFeature('openai')" style="cursor:pointer;" id="card-openai">
+                    <h2 class="subtitle">OpenAI Chat</h2>
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="box has-text-centered" onclick="selectFeature('gemini')" style="cursor:pointer;" id="card-gemini">
+                    <h2 class="subtitle">Gemini Chat</h2>
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="box has-text-centered" onclick="selectFeature('vector')" style="cursor:pointer;" id="card-vector">
+                    <h2 class="subtitle">Vector Store Search</h2>
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="box has-text-centered" onclick="selectFeature('eval')" style="cursor:pointer;" id="card-eval">
+                    <h2 class="subtitle">Model Evaluation</h2>
+                </div>
+            </div>
+                <div class="column is-one-sixth">
+                    <div class="box has-text-centered" onclick="selectFeature('streaming')" style="cursor:pointer;" id="card-streaming">
+                        <h2 class="subtitle">Streaming Chat</h2>
+                    </div>
+                </div>
+                <div class="column is-one-sixth">
+                    <div class="box has-text-centered" onclick="selectFeature('reasoning')" style="cursor:pointer;" id="card-reasoning">
+                        <h2 class="subtitle">Reasoning Chat</h2>
+                    </div>
+                </div>
+        </div>
+        <div id="feature-content"></div>
+        <style>
+        .chat-container {
+            background: #ece5dd;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+        }
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .chat-bubble {
+            max-width: 75%;
+            padding: 1em 1.5em;
+            border-radius: 22px;
+            font-size: 1.25rem;
+            word-break: break-word;
+            display: inline-block;
+        }
+        .chat-bubble.user {
+            background: #dcf8c6;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.ai {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .chat-input-row input {
+            flex: 1;
+        }
+        </style>
+        <div class="box mt-5" style="background:transparent;box-shadow:none;">
+            <h2 class="subtitle">Chat Interface</h2>
+            <div class="chat-container">
+                <div id="chat-history" class="chat-history"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="unified-chat-input" class="input" placeholder="Type your message" onkeydown="if(event.key==='Enter'){sendUnifiedChat();}">
+                    <button class="button is-link" onclick="sendUnifiedChat()">Send</button>
+                </div>
+            </div>
+        </div>
+        </div>
+</section>
+<script>
+
+const apiBase = "http://localhost:8000";
+let selectedFeature = 'openai';
+
+function checkHealth() {
+    fetch(`${apiBase}/health`).then(r => r.json()).then(data => {
+        document.getElementById('health-status').textContent = data.status === 'healthy' ? '✅ Healthy' : '❌ Unhealthy';
+    }).catch(() => {
+        document.getElementById('health-status').textContent = '❌ Error connecting to backend';
+    });
+}
+
+function selectFeature(feature) {
+    selectedFeature = feature;
+    // Highlight selected card
+    ['openai','gemini','vector','eval'].forEach(id => {
+        document.getElementById('card-' + id).classList.remove('has-background-primary-light');
+    });
+    document.getElementById('card-' + feature).classList.add('has-background-primary-light');
+    renderFeatureContent(feature);
+    document.getElementById('unified-chat-response').textContent = '';
+}
+function selectFeature(feature) {
+    selectedFeature = feature;
+    // Highlight selected card
+    ['openai','streaming','reasoning','gemini','vector','eval'].forEach(id => {
+        const card = document.getElementById('card-' + id);
+        if (card) card.classList.remove('has-background-primary-light');
+    });
+    const selectedCard = document.getElementById('card-' + feature);
+    if (selectedCard) selectedCard.classList.add('has-background-primary-light');
+    renderFeatureContent(feature);
+    chatHistory = [];
+    renderChatHistory();
+}
+
+function renderFeatureContent(feature) {
+    let html = '';
+    if (feature === 'openai') {
+        html += `<div class='notification is-info'>You are chatting with OpenAI (basic chat endpoint).</div>`;
+    } else if (feature === 'gemini') {
+        html += `<div class='notification is-info'>You are chatting with Gemini.</div>`;
+    } else if (feature === 'vector') {
+        html += `<div class='box'><h2 class='subtitle'>Search Vector Store</h2><input type='text' id='search-input' class='input mb-2' placeholder='Enter your query'><button class='button is-info mt-2' onclick='searchStore()'>Search</button><pre id='search-results' class='mt-2'></pre></div>`;
+    } else if (feature === 'eval') {
+        html += `<div class='box'><h2 class='subtitle'>Run Model Evaluation</h2><button class='button is-warning' onclick='runEval()'>Run Eval</button><pre id='eval-run-message' class='mt-2'></pre></div><div class='box'><h2 class='subtitle'>Get Evaluation Results</h2><input type='text' id='eval-id' class='input mb-2' placeholder='Eval ID'><input type='text' id='run-id' class='input mb-2' placeholder='Run ID'><button class='button is-success' onclick='getEvalResults()'>Get Results</button><div id='eval-results' class='is-scrollable mt-2'></div></div>`;
+    }
+    document.getElementById('feature-content').innerHTML = html;
+}
+let chatHistory = [];
+
+function sendUnifiedChat() {
+    const inputElem = document.getElementById('unified-chat-input');
+    const input = inputElem.value.trim();
+    if (!input) return;
+    let url = '';
+    let body = { message: input };
+    if (selectedFeature === 'openai') {
+        url = `${apiBase}/chat`;
+    } else if (selectedFeature === 'gemini') {
+        url = `${apiBase}/chat_with_gemini`;
+    } else if (selectedFeature === 'vector') {
+        searchStore();
+        return;
+    } else {
+        addChatBubble('system', 'Select a chat backend.');
+        return;
+    }
+    addChatBubble('user', input);
+    inputElem.value = '';
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+    .then(r => r.json())
+    .then(data => {
+        addChatBubble('ai', data.response || JSON.stringify(data));
+    })
+    .catch(() => {
+        addChatBubble('system', '❌ Chat failed');
+    });
+}
+function sendUnifiedChat() {
+    const inputElem = document.getElementById('unified-chat-input');
+    const input = inputElem.value.trim();
+    if (!input) return;
+    let url = '';
+    let body = { message: input };
+    if (selectedFeature === 'openai') {
+        url = `${apiBase}/chat`;
+        addChatBubble('user', input);
+        inputElem.value = '';
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+        .then(r => r.json())
+        .then(data => {
+            addChatBubble('ai', data.response || JSON.stringify(data));
+        })
+        .catch(() => {
+            addChatBubble('system', '❌ Chat failed');
+        });
+    } else if (selectedFeature === 'streaming') {
+        url = `${apiBase}/chat/stream`;
+        addChatBubble('user', input);
+        inputElem.value = '';
+        streamChatSSE(url, body);
+    } else if (selectedFeature === 'reasoning') {
+        url = `${apiBase}/chat/reasoning`;
+        addChatBubble('user', input);
+        inputElem.value = '';
+        reasoningChatSSE(url, body);
+    } else if (selectedFeature === 'gemini') {
+        url = `${apiBase}/chat_with_gemini`;
+        addChatBubble('user', input);
+        inputElem.value = '';
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+        .then(r => r.json())
+        .then(data => {
+            addChatBubble('ai', data.response || JSON.stringify(data));
+        })
+        .catch(() => {
+            addChatBubble('system', '❌ Chat failed');
+        });
+    } else if (selectedFeature === 'vector') {
+        searchStore();
+        return;
+    } else {
+        addChatBubble('system', 'Select a chat backend.');
+        return;
+    }
+}
+
+function streamChatSSE(url, body) {
+    let aiMsgIdx = chatHistory.length;
+    addChatBubble('ai', '');
+    const evtSource = new EventSourcePolyfill(url, {
+        headers: { 'Content-Type': 'application/json' },
+        payload: JSON.stringify(body),
+        method: 'POST',
+    });
+    evtSource.onmessage = function(event) {
+        if (event.data) {
+            let prev = chatHistory[aiMsgIdx].message;
+            let incoming = event.data;
+            // Add a space if needed between tokens
+            if (prev && incoming &&
+                !/\s$/.test(prev) &&
+                !/^\s|[.,!?;:]/.test(incoming)) {
+                chatHistory[aiMsgIdx].message += ' ';
+            }
+            chatHistory[aiMsgIdx].message += incoming;
+            renderChatHistory();
+        }
+    };
+    evtSource.onerror = function() {
+        evtSource.close();
+    };
+}
+
+function reasoningChatSSE(url, body) {
+    let aiMsgIdx = chatHistory.length;
+    let reasoningMsgIdx = aiMsgIdx;
+    addChatBubble('ai', ''); // For reasoning
+    addChatBubble('ai', ''); // For output
+    const evtSource = new EventSourcePolyfill(url, {
+        headers: { 'Content-Type': 'application/json' },
+        payload: JSON.stringify(body),
+        method: 'POST',
+    });
+    evtSource.addEventListener('reasoning', function(event) {
+        if (event.data) {
+            let prev = chatHistory[reasoningMsgIdx].message;
+            let incoming = event.data;
+            if (prev && incoming &&
+                !/\s$/.test(prev) &&
+                !/^\s|[.,!?;:]/.test(incoming)) {
+                chatHistory[reasoningMsgIdx].message += ' ';
+            }
+            chatHistory[reasoningMsgIdx].message += incoming;
+            renderChatHistory();
+        }
+    });
+    evtSource.addEventListener('output', function(event) {
+        if (event.data) {
+            let prev = chatHistory[reasoningMsgIdx+1].message;
+            let incoming = event.data;
+            if (prev && incoming &&
+                !/\s$/.test(prev) &&
+                !/^\s|[.,!?;:]/.test(incoming)) {
+                chatHistory[reasoningMsgIdx+1].message += ' ';
+            }
+            chatHistory[reasoningMsgIdx+1].message += incoming;
+            renderChatHistory();
+        }
+    });
+    evtSource.onerror = function() {
+        evtSource.close();
+    };
+}
+
+// Polyfill for EventSource with POST support (for FastAPI SSE)
+class EventSourcePolyfill {
+    constructor(url, options) {
+        this.url = url;
+        this.options = options;
+        this.eventListeners = {};
+        this.connect();
+    }
+    connect() {
+        fetch(this.url, {
+            method: this.options.method || 'GET',
+            headers: this.options.headers,
+            body: this.options.payload,
+        }).then(response => {
+            const reader = response.body.getReader();
+            let buffer = '';
+            const read = () => {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        if (this.onerror) this.onerror();
+                        return;
+                    }
+                    buffer += new TextDecoder().decode(value);
+                    let parts = buffer.split(/\n\n/);
+                    buffer = parts.pop();
+                    for (let part of parts) {
+                        let event = { data: '', type: 'message' };
+                        let lines = part.split('\n');
+                        for (let line of lines) {
+                            if (line.startsWith('event:')) event.type = line.replace('event:', '').trim();
+                            else if (line.startsWith('data:')) event.data += line.replace('data:', '').trim();
+                        }
+                        if (event.type === 'message' && this.onmessage) this.onmessage(event);
+                        else if (this.eventListeners[event.type]) this.eventListeners[event.type].forEach(cb => cb(event));
+                    }
+                    read();
+                });
+            };
+            read();
+        });
+    }
+    addEventListener(type, cb) {
+        if (!this.eventListeners[type]) this.eventListeners[type] = [];
+        this.eventListeners[type].push(cb);
+    }
+    close() {
+        // No-op for fetch polyfill
+    }
+}
+
+function addChatBubble(sender, message) {
+    chatHistory.push({ sender, message });
+    renderChatHistory();
+}
+
+function renderChatHistory() {
+    const chatDiv = document.getElementById('chat-history');
+    chatDiv.innerHTML = '';
+    let isReasoning = selectedFeature === 'reasoning';
+    for (let i = 0; i < chatHistory.length; i++) {
+        const msg = chatHistory[i];
+        if (msg.sender === 'user') {
+            chatDiv.innerHTML += `<div class='chat-bubble user'>${escapeHTML(msg.message)}</div>`;
+        } else if (msg.sender === 'ai') {
+            if (isReasoning) {
+                // Reasoning: first AI bubble after user is reasoning, second is output
+                const prev = chatHistory[i-1];
+                if (prev && prev.sender === 'user') {
+                    chatDiv.innerHTML += `<div style='margin-top:1.5em; font-weight:bold; color:#888;'>Reasoning:</div>`;
+                    chatDiv.innerHTML += `<div class='chat-bubble ai' style='margin-bottom:0.5em;'>${escapeHTML(msg.message)}</div>`;
+                } else {
+                    chatDiv.innerHTML += `<div style='margin-top:0.5em; font-weight:bold; color:#888;'>Final Output:</div>`;
+                    chatDiv.innerHTML += `<div class='chat-bubble ai' style='margin-bottom:1.5em;'>${escapeHTML(msg.message)}</div>`;
+                }
+            } else {
+                chatDiv.innerHTML += `<div class='chat-bubble ai'>${escapeHTML(msg.message)}</div>`;
+            }
+        } else {
+            chatDiv.innerHTML += `<div class='chat-bubble ai' style='background:#ffeaea;color:#b71c1c;'>${escapeHTML(msg.message)}</div>`;
+        }
+    }
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+function escapeHTML(str) {
+    return str.replace(/[&<>\"']/g, function(tag) {
+        const charsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '\"': '&quot;',
+            "'": '&#39;'
+        };
+        return charsToReplace[tag] || tag;
+    });
+}
+
+
+
+// Initialize default selection
+window.onload = function() {
+    selectFeature('openai');
+};
+
+
+function uploadFile() {
+    const fileInput = document.getElementById('upload-file');
+    const file = fileInput.files[0];
+    if (!file) return alert('Please select a file.');
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch(`${apiBase}/upload`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('upload-message').textContent = data.message || JSON.stringify(data);
+    })
+    .catch(() => {
+        document.getElementById('upload-message').textContent = '❌ Upload failed';
+    });
+}
+
+function searchStore() {
+    const input = document.getElementById('search-input').value;
+    fetch(`${apiBase}/search_store`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('search-results').textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+    })
+    .catch(() => {
+        document.getElementById('search-results').textContent = '❌ Search failed';
+    });
+}
+
+function runEval() {
+    fetch(`${apiBase}/run-eval`).then(r => r.json()).then(data => {
+        document.getElementById('eval-run-message').textContent = JSON.stringify(data, null, 2);
+    }).catch(() => {
+        document.getElementById('eval-run-message').textContent = '❌ Eval run failed';
+    });
+}
+
+function getEvalResults() {
+    const evalId = document.getElementById('eval-id').value;
+    const runId = document.getElementById('run-id').value;
+    if (!evalId || !runId) return alert('Please enter both Eval ID and Run ID.');
+    fetch(`${apiBase}/get_eval_results?eval_id=${encodeURIComponent(evalId)}&run_id=${encodeURIComponent(runId)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.detail) {
+                document.getElementById('eval-results').innerHTML = `<span style='color:red;'>${data.detail}</span>`;
+            } else {
+                let html = '';
+                if (data.status) html += `<b>Status:</b> ${data.status}<br/>`;
+                if (data.result_counts) {
+                    html += `<b>Results:</b> Passed: ${data.result_counts.passed}, Failed: ${data.result_counts.failed}, Total: ${data.result_counts.total}<br/>`;
+                }
+                if (data.per_testing_criteria_results) {
+                    html += '<b>Criteria Results:</b><ul>';
+                    data.per_testing_criteria_results.forEach(c => {
+                        html += `<li>${c.testing_criteria}: Passed: ${c.passed}, Failed: ${c.failed}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                if (data.report_url) {
+                    html += `<a href='${data.report_url}' target='_blank'>View Full Report</a><br/>`;
+                }
+                html += `<details><summary>Raw JSON</summary><pre>${JSON.stringify(data, null, 2)}</pre></details>`;
+                document.getElementById('eval-results').innerHTML = html;
+            }
+        })
+        .catch(() => {
+            document.getElementById('eval-results').innerHTML = '❌ Could not fetch results';
+        });
+}
+</script>
+</body>
+</html>

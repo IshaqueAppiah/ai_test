@@ -115,7 +115,7 @@ def resonining_from_openai(chat: str):
 def upload_file_to_vector_store(file_path: str, vector_store_name: str = "Support FAQ"):
     vector_store = create_vector_store(name=vector_store_name)
     with open(file_path, "rb") as f:
-        client.vector_stores.files.upload_and_poll(
+        client.vector_stores.files.upload_and_poll( 
             vector_store_id=vector_store.id, file=f
         )
     return vector_store.id
