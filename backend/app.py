@@ -1,13 +1,13 @@
 import os
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from models.chat_models import ChatMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 from services.open_ai_service import  basic_chat_open_ai_file_search, search_vector_store, upload_file_to_vector_store
+from evaluations.run_openai_eval import retrieve_result, run_evaluation
 from routes.chat_routes import router as chat_router
-from run_openai_eval import retrieve_result, run_evaluation
 import json
 
 
@@ -44,7 +44,13 @@ async def run_eval():
 
 @app.get("/get_eval_results")
 async def get_results(eval_id: str, run_id: str):
-    return retrieve_result(eval_id, run_id)
+    try:
+        result = retrieve_result(eval_id, run_id)
+        if isinstance(result, dict) and "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(exc)}")
 
 
 

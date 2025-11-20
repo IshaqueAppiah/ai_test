@@ -4,7 +4,7 @@ client = OpenAI()
 def run_evaluation():
     try:
         with open("eval_data.jsonl", "rb") as f:
-            file = client.files.create(file=f, purpose="fine-tune")
+            file = client.files.create(file=f, purpose="evals")
         eval_obj = client.evals.create(
             name="QA Eval",
             data_source_config={
