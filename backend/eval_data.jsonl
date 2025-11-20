@@ -1,0 +1,10 @@
+{"item": {"input": "What is 2+2?", "ideal_output": "4"}}
+{"item": {"input": "What is 3*3?", "ideal_output": "9"}}
+{"item": {"input": "What is the capital of France?", "ideal_output": "Paris"}}
+{"item": {"input": "Who wrote 'Romeo and Juliet'?", "ideal_output": "William Shakespeare"}}
+{"item": {"input": "What is the boiling point of water in Celsius?", "ideal_output": "100"}}
+{"item": {"input": "What is the largest planet in our solar system?", "ideal_output": "Jupiter"}}
+{"item": {"input": "What is the chemical symbol for gold?", "ideal_output": "Au"}}
+{"item": {"input": "Who painted the Mona Lisa?", "ideal_output": "Leonardo da Vinci"}}
+{"item": {"input": "What is the square root of 64?", "ideal_output": "8"}}
+{"item": {"input": "What year did the first man land on the moon?", "ideal_output": "1969"}}

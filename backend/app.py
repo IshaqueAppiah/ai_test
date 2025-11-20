@@ -1,4 +1,3 @@
-
 import os
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 from services.open_ai_service import  basic_chat_open_ai_file_search, search_vector_store, upload_file_to_vector_store
 from routes.chat_routes import router as chat_router
-
+from run_openai_eval import run_eval_and_return_result
+import json
 
 
 app = FastAPI(title="AI Application Developer Labs", version="1.0.0")
@@ -32,7 +32,15 @@ async def root():
 async def health():
     return {"status": "healthy"}
 
-
+# GET endpoint to run the eval
+@app.get("/run-eval")
+async def run_eval():
+    run = run_eval_and_return_result()
+    if isinstance(run, dict) and "error" in run:
+        return {"error": run["error"]}
+    if hasattr(run, "model_dump_json"):
+        return json.loads(run.model_dump_json()) # type: ignore
+    return run
 
 
 
