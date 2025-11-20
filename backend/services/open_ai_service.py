@@ -73,7 +73,7 @@ def streamed_chat(chat: str):
 
 def resonining_from_openai(chat: str):
     stream = client.responses.create(
-        model="gpt-5",
+        model="gpt-5-nano",
         reasoning={"effort": "low", "summary": "auto"},
         input=[{"role": "user", "content": chat}],
         tools=[
