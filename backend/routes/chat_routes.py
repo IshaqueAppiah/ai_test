@@ -1,7 +1,9 @@
 from fastapi import APIRouter
+from services.gemini_ai_service import gemini_ai_client_response
 from models.chat_models import ChatMessage, ChatResponse
 from services.open_ai_service import basic_chat_open_ai, resonining_from_openai, streamed_chat
 from fastapi.responses import StreamingResponse
+
 router = APIRouter()
 
 @router.post("/chat")
@@ -57,3 +59,12 @@ async def reasoning_chat(chat_message: ChatMessage):
         headers={"Cache-Control": "no-cache"},
     )
 
+
+@router.post('/chat_with_gemini')
+def chat_with_gemini(chat_message: ChatMessage):
+    message = chat_message.message
+    try:
+        response = gemini_ai_client_response(message)
+        return ChatResponse(response=response)
+    except Exception as exc:
+        return ChatResponse(response=f"Error: {str(exc)}")
