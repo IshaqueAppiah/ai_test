@@ -2,7 +2,7 @@
 from openai import OpenAI
 import json
 from custom_tools.current_weather import get_current_weather
-from backend.tools import tools
+from tools import tools
 from typing import Any
 
 
@@ -14,8 +14,16 @@ You are a personal math tutor. When asked a math question,
 write and run code using the python tool to answer the question.
 """
 
+def basic_chat_open_ai(chat:str):
+    response = client.responses.create(
+        model="gpt-5-nano",
+        input=[{"role": "user", "content": chat}],
+        conversation=conversation.id,
+        instructions=instructions,
+    )
+    return response.output_text
 
-def basic_chat_open_ai(chat: str):
+def basic_chat_open_ai_with_function_calling(chat: str):
     input_list: Any = [{"role": "user", "content": chat}]
     response = client.responses.create(
         model="gpt-5-nano",
@@ -29,7 +37,6 @@ def basic_chat_open_ai(chat: str):
         if item.type == "function_call":
             if item.name == "get_current_weather":
                 weather = get_current_weather(json.loads(item.arguments))
-                print(f"Weather tool called with: {item.arguments}, result: {weather}", file=sys.stderr, flush=True)
 
             # 4. Provide function call results to the model
             input_list.append(
