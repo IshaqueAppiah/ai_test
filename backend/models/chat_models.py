@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 class ChatMessage(BaseModel):
@@ -5,7 +6,13 @@ class ChatMessage(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
-    
-class EvalRunRequest(BaseModel):
-    eval_id: str
-    run_id: str
+
+
+class OllamaJustMessage(BaseModel):
+    role:str
+    content:str
+
+class ChatMessageForOllama(BaseModel):
+    model:str
+    messages: List[OllamaJustMessage]
+    stream:bool

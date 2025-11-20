@@ -1,6 +1,7 @@
 from fastapi import APIRouter
+from services.ollama_ai_service import chat_with_ollama
 from services.gemini_ai_service import gemini_ai_client_response
-from models.chat_models import ChatMessage, ChatResponse
+from models.chat_models import ChatMessage, ChatMessageForOllama, ChatResponse, OllamaJustMessage
 from services.open_ai_service import basic_chat_open_ai, resonining_from_openai, streamed_chat
 from fastapi.responses import StreamingResponse
 
@@ -68,3 +69,18 @@ def chat_with_gemini(chat_message: ChatMessage):
         return ChatResponse(response=response)
     except Exception as exc:
         return ChatResponse(response=f"Error: {str(exc)}")
+    
+@router.post("/chat/ollama")
+def chat_with_ollam(chat_message: ChatMessage):
+    message = chat_message.message
+    payload = ChatMessageForOllama(
+        model="gemma3:1b", 
+        messages=[OllamaJustMessage(role="user", content=message)],
+        stream=False,
+    )
+    response = chat_with_ollama(payload)
+    data = response.json()
+    return {
+        "content": data.get("message", {}).get("content", ""),
+        "model": data.get("model", "")
+    }
