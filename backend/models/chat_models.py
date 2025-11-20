@@ -5,3 +5,7 @@ class ChatMessage(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+    
+class EvalRunRequest(BaseModel):
+    eval_id: str
+    run_id: str

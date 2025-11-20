@@ -1,9 +1,8 @@
 
 from openai import OpenAI
-
-def run_eval_and_return_result():
+client = OpenAI()
+def run_evaluation():
     try:
-        client = OpenAI()
         with open("eval_data.jsonl", "rb") as f:
             file = client.files.create(file=f, purpose="fine-tune")
         eval_obj = client.evals.create(
@@ -50,8 +49,17 @@ def run_eval_and_return_result():
     except Exception as e:
         # Return error details in a dict for FastAPI JSON response
         return {"error": str(e)}
+    
+
+def retrieve_result(eval_id: str, run_id: str):
+    # OpenAI API expects both eval_id and run_id as keyword arguments
+    try:
+        run = client.evals.runs.retrieve(eval_id=eval_id, run_id=run_id)
+        return run
+    except Exception as e:
+        return {"error": str(e)}
 
 if __name__ == "__main__":
-    result = run_eval_and_return_result()
+    result = run_evaluation()
     print("Eval run result:")
     print(result)

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from services.open_ai_service import  basic_chat_open_ai_file_search, search_vector_store, upload_file_to_vector_store
 from routes.chat_routes import router as chat_router
-from run_openai_eval import run_eval_and_return_result
+from run_openai_eval import retrieve_result, run_evaluation
 import json
 
 
@@ -35,12 +35,17 @@ async def health():
 # GET endpoint to run the eval
 @app.get("/run-eval")
 async def run_eval():
-    run = run_eval_and_return_result()
+    run = run_evaluation()
     if isinstance(run, dict) and "error" in run:
         return {"error": run["error"]}
     if hasattr(run, "model_dump_json"):
         return json.loads(run.model_dump_json()) # type: ignore
     return run
+
+@app.get("/get_eval_results")
+async def get_results(eval_id: str, run_id: str): # type: ignore
+    return retrieve_result(eval_id, run_id) # type: ignore
+
 
 
 
