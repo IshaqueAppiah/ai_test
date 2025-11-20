@@ -9,6 +9,7 @@ dependencies = [
     "openai>=2.8.0",
     "pytest>=8.4.1",
     "python-dotenv>=1.1.1",
+    "python-multipart>=0.0.20",
     "uvicorn>=0.24.0",
 ]
 
