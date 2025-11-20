@@ -1,23 +1,33 @@
 import './App.css'
-import { useState, useRef, useEffect } from 'react';
-import { Send, Upload, Zap, Brain, Search,Menu, X, Loader, Copy, Check, Trash2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Upload, Zap, Brain, Search, Menu, X, Loader, Copy, Check, Trash2 } from 'lucide-react';
+
+type Message = {
+  role: string;
+  content: string;
+  isError?: boolean;
+  isSystem?: boolean;
+  isStreaming?: boolean;
+  reasoning?: string;
+  model?: string;
+};
 
 function App() {
-  const [activeTab, setActiveTab] = useState('chat');
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [aiModel, setAiModel] = useState('openai');
-  const [streamMode, setStreamMode] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [vectorStoreId, setVectorStoreId] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [copiedId, setCopiedId] = useState(null);
-  const [temperature, setTemperature] = useState(0.7);
-  const [topK, setTopK] = useState(5);
-  const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
-   const API_URL = 'http://localhost:8000';
+  const [activeTab, setActiveTab] = useState<string>('chat');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [aiModel, setAiModel] = useState<string>('openai');
+  const [streamMode, setStreamMode] = useState<boolean>(false);
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [vectorStoreId, setVectorStoreId] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [temperature, setTemperature] = useState<number>(0.7);
+  const [topK, setTopK] = useState<number>(5);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const API_URL = 'http://localhost:8000';
     const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -26,8 +36,8 @@ function App() {
       scrollToBottom();
     }, [messages]);
 
-    const buildPayload = () => {
-    const payload = {
+      const buildPayload = (): Record<string, unknown> => {
+    const payload: Record<string, unknown> = {
       message: input.trim(),
     };
 
@@ -70,7 +80,7 @@ function App() {
 
     try {
       let endpoint = '/chat';
-      let payload = buildPayload();
+      const payload = buildPayload();
 
       if (activeTab === 'chat') {
         if (aiModel === 'gemini') {
@@ -113,7 +123,7 @@ function App() {
     } catch (error) {
       const errorMessage = {
         role: 'assistant',
-        content: `Error: ${error.message}`,
+        content: `Error: ${error instanceof Error ? error.message : String(error)}`,
         isError: true,
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -122,7 +132,7 @@ function App() {
     }
   };
 
-  const handleStreamResponse = async (endpoint, payload) => {
+  const handleStreamResponse = async (endpoint: string, payload: Record<string, unknown>): Promise<void> => {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -131,7 +141,7 @@ function App() {
 
     if (!response.ok) throw new Error('Failed to stream response');
 
-    const reader = response.body.getReader();
+    const reader = response?.body?.getReader();
     const decoder = new TextDecoder();
     let fullResponse = '';
 
@@ -139,6 +149,10 @@ function App() {
       ...prev,
       { role: 'assistant', content: '', isStreaming: true },
     ]);
+
+    if (!reader) {
+      throw new Error('Failed to get stream reader');
+    }
 
     while (true) {
       const { done, value } = await reader.read();
@@ -166,7 +180,7 @@ function App() {
     });
   };
 
-  const handleReasoningStream = async (endpoint, payload) => {
+  const handleReasoningStream = async (endpoint: string, payload: Record<string, unknown>): Promise<void> => {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -175,7 +189,7 @@ function App() {
 
     if (!response.ok) throw new Error('Failed to stream response');
 
-    const reader = response.body.getReader();
+    const reader = response?.body?.getReader();
     const decoder = new TextDecoder();
     let reasoning = '';
     let output = '';
@@ -186,7 +200,7 @@ function App() {
     ]);
 
     while (true) {
-      const { done, value } = await reader.read();
+      const { done, value } = await reader!.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
@@ -217,8 +231,8 @@ function App() {
     });
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0] ?? null;
     if (!file) return;
 
     const formData = new FormData();
@@ -244,18 +258,21 @@ function App() {
         { role: 'assistant', content: data.message, isSystem: true },
       ]);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: `Upload error: ${error.message}`, isError: true },
+        { role: 'assistant', content: `Upload error: ${errorMsg}`, isError: true },
       ]);
     } finally {
       setLoading(false);
     }
   };
 
-  const copyToClipboard = (text, id) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
+  const copyToClipboard = (text: string, id: number | null): void => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+    setCopiedId(typeof id === 'number' ? id : null);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
