@@ -43,8 +43,8 @@ async def run_eval():
     return run
 
 @app.get("/get_eval_results")
-async def get_results(eval_id: str, run_id: str): # type: ignore
-    return retrieve_result(eval_id, run_id) # type: ignore
+async def get_results(eval_id: str, run_id: str):
+    return retrieve_result(eval_id, run_id)
 
 
 

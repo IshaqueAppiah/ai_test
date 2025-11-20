@@ -47,12 +47,10 @@ def run_evaluation():
         )
         return run
     except Exception as e:
-        # Return error details in a dict for FastAPI JSON response
         return {"error": str(e)}
     
 
 def retrieve_result(eval_id: str, run_id: str):
-    # OpenAI API expects both eval_id and run_id as keyword arguments
     try:
         run = client.evals.runs.retrieve(eval_id=eval_id, run_id=run_id)
         return run
