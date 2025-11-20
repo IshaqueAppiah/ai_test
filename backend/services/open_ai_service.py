@@ -14,6 +14,9 @@ You are a personal math tutor. When asked a math question,
 write and run code using the python tool to answer the question.
 """
 
+def create_vector_store(name: str = "Support FAQ"):
+     return client.vector_stores.create(name=name)
+
 def basic_chat_open_ai(chat:str):
     response = client.responses.create(
         model="gpt-5-nano",
@@ -85,3 +88,12 @@ def resonining_from_openai(chat: str):
         max_output_tokens=300,
     )
     return stream
+
+def upload_file_to_vector_store(file_path: str, vector_store_name: str = "Support FAQ"):
+    vector_store = create_vector_store(name=vector_store_name)
+    with open(file_path, "rb") as f:
+        client.vector_stores.files.upload_and_poll(
+            vector_store_id=vector_store.id,
+            file=f
+        )
+    return vector_store.id
