@@ -1,6 +1,9 @@
 import os
 import tempfile
 from fastapi.testclient import TestClient
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 from app import app
 
 def test_upload_and_search():
