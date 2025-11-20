@@ -1,7 +1,9 @@
-from typing import List, Dict, Any
+
+from typing import List, Union, Any
+from models.tools_models import ToolDict
 
 
-tools: List[Dict[str, Any]] = [
+tools: List[Union[ToolDict, dict[str, Any]]] = [
     {
         "type": "function",
         "function": {
