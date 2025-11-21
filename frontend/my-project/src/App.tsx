@@ -41,7 +41,7 @@ function App() {
       message: input.trim(),
     };
 
-    if (activeTab === 'chat' && aiModel === 'ollama') {
+   if (activeTab === 'chat' && aiModel === 'ollama') {
       return {
         message: input.trim(),
       };
