@@ -43,15 +43,7 @@ function App() {
 
     if (activeTab === 'chat' && aiModel === 'ollama') {
       return {
-        model: 'gemma3:1b',
-        messages: [
-          {
-            role: 'user',
-            content: input.trim(),
-          },
-        ],
-        stream: false,
-        temperature: temperature,
+        message: input.trim(),
       };
     }
 
