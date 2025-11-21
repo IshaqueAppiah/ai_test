@@ -35,9 +35,12 @@ async def upload_batch(file: UploadFile = File(...)) -> dict[str, Any]:
 
     for idx, ln in enumerate(lines, start=1):
         try:
-            json.loads(ln)
+            obj = json.loads(ln)
+            # Ensure required field `custom_id` is present
+            if not isinstance(obj, dict) or 'custom_id' not in obj:
+                raise ValueError("Missing required field 'custom_id'")
         except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Invalid JSON on line {idx}: {str(exc)}")
+            raise HTTPException(status_code=400, detail=f"Invalid JSON or missing field on line {idx}: {str(exc)}")
 
     try:
         result = create_batch_from_upload(text, filename=filename)
