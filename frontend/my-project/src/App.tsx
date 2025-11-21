@@ -91,7 +91,7 @@ function App() {
           endpoint = '/chat/stream';
         }
       } else if (activeTab === 'reasoning') {
-        endpoint = '/chat/chat/reasoning';
+        endpoint = '/chat/reasoning';
       } else if (activeTab === 'search') {
         endpoint = '/search_store';
       }
