@@ -1,0 +1,4 @@
+{"id": "1", "prompt": "What is the capital of France?", "metadata": {"category": "geography"}}
+{"id": "2", "prompt": "Explain Newton's second law in one sentence.", "metadata": {"category": "physics"}}
+{"id": "3", "prompt": "List three uses of machine learning in healthcare.", "metadata": {"category": "ml"}}
+{"id": "4", "prompt": "Provide a short summary (2 sentences) of the following passage: 'Artificial intelligence is transforming industries by enabling new automation and insights.'", "metadata": {"category": "summary"}}
