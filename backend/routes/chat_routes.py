@@ -70,7 +70,7 @@ def chat_with_gemini(chat_message: ChatMessage):
     except Exception as exc:
         return ChatResponse(response=f"Error: {str(exc)}")
     
-@router.post("/chat/ollama")
+@router.post("/ollama")
 def chat_with_ollam(chat_message: ChatMessage):
     message = chat_message.message
     payload = ChatMessageForOllama(

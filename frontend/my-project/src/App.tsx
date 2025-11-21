@@ -84,14 +84,14 @@ function App() {
 
       if (activeTab === 'chat') {
         if (aiModel === 'gemini') {
-          endpoint = '/chat_with_gemini';
+          endpoint = '/chat/chat_with_gemini';
         } else if (aiModel === 'ollama') {
           endpoint = '/chat/ollama';
         } else if (streamMode) {
           endpoint = '/chat/stream';
         }
       } else if (activeTab === 'reasoning') {
-        endpoint = '/chat/reasoning';
+        endpoint = '/chat/chat/reasoning';
       } else if (activeTab === 'search') {
         endpoint = '/search_store';
       }
