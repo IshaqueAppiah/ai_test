@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 from services.open_ai_service import  basic_chat_open_ai_file_search, search_vector_store, upload_file_to_vector_store
+from routes.batch_routes import router as batch_router
 from evaluations.run_openai_eval import retrieve_result, run_evaluation
 from routes.chat_routes import router as chat_router
 import json
@@ -75,6 +76,9 @@ async def upload_file(file: UploadFile = File(...)) -> dict[str, str | None]:
         "content_type": file.content_type,
         "message": message
     }
+
+
+app.include_router(batch_router)
 
 
 @app.post("/search_store")

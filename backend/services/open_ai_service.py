@@ -3,6 +3,7 @@ import json
 from custom_tools.current_weather import get_current_weather
 from tools import tools
 from typing import Any
+import io
 
 
 client = OpenAI()
@@ -129,3 +130,59 @@ def search_vector_store(user_query: str, vector_store_id: str):
     )
     print(results)
     return results
+
+def create_batch_from_upload(file_like: Any, filename: str | None = None):
+    """
+    Uploads an in-memory file-like object to OpenAI Files (purpose='batch')
+    and immediately creates a batch job pointing to that uploaded file.
+
+    Returns a dict with minimal identifiers: `file_id` and `batch_id`.
+    """
+    # Accept bytes, str, or file-like objects
+    if isinstance(file_like, (bytes, bytearray)):
+        data = bytes(file_like)
+    elif isinstance(file_like, str):
+        data = file_like.encode()
+    else:
+        # try to treat as file-like
+        try:
+            file_like.seek(0)
+        except Exception:
+            pass
+        data = file_like.read()
+        if isinstance(data, str):
+            data = data.encode()
+
+    bio = io.BytesIO(data if data is not None else b"")
+    # Give the BytesIO a name attribute like a real file so SDKs expecting it may work
+    bio.name = filename 
+
+    uploaded = client.files.create(file=bio, purpose="batch")
+
+    batch = client.batches.create(
+        input_file_id=uploaded.id,
+        endpoint="/v1/chat/completions",
+        completion_window="24h",
+        metadata={"description": "uploaded batch job"},
+    )
+
+    return {
+        "file_id": getattr(uploaded, "id", None),
+        "batch_id": getattr(batch, "id", None),
+    }
+
+def check_batch_status(batch_id:str):
+    batch = client.batches.retrieve(batch_id)
+    return batch
+
+def retrieving_batch_results(file_id:str):
+    file_response = client.files.content(file_id)
+    return file_response.text
+
+def cancel_batch(batch_id:str):
+    client.batches.cancel(batch_id)
+
+def get_all_batches():
+   return client.batches.list(limit=10)
+
+
