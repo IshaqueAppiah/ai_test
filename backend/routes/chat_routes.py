@@ -5,9 +5,9 @@ from models.chat_models import ChatMessage, ChatMessageForOllama, ChatResponse, 
 from services.open_ai_service import basic_chat_open_ai, resonining_from_openai, streamed_chat
 from fastapi.responses import StreamingResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/chat", tags=["chat"])
 
-@router.post("/chat")
+@router.post("/")
 async def chat(chat_message: ChatMessage) -> ChatResponse:
     message = chat_message.message
     
@@ -15,7 +15,7 @@ async def chat(chat_message: ChatMessage) -> ChatResponse:
     
     return ChatResponse(response=response) 
 
-@router.post("/chat/stream")
+@router.post("/stream")
 async def stream_chat(chat_message:ChatMessage):
     message = chat_message.message
     stream_response =streamed_chat(message)
@@ -35,7 +35,7 @@ async def stream_chat(chat_message:ChatMessage):
 
 
            
-@router.post("/chat/reasoning")
+@router.post("/reasoning")
 async def reasoning_chat(chat_message: ChatMessage):
     message = chat_message.message
     stream_response = resonining_from_openai(message)
